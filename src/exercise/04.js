@@ -4,35 +4,11 @@
 import * as React from 'react'
 import {useLocalStorageState} from '../utils'
 
-function Board({
-  winner,
-  currentGame,
-  currentStep,
-  nextValue,
-  setCurrentGame,
-  setCurrentStep,
-}) {
-  function selectSquare(square) {
-    const activeStep = [...currentGame[currentStep]]
-    if (winner || activeStep[square] !== null) {
-      return
-    }
-
-    activeStep[square] = nextValue
-    const squaresCopy = [...currentGame.slice(0, currentStep + 1), activeStep]
-    setCurrentGame(squaresCopy)
-    setCurrentStep(currentStep + 1)
-  }
-
-  function restart() {
-    setCurrentGame([Array(9).fill(null)])
-    setCurrentStep(0)
-  }
-
+function Board({selectSquare, squares}) {
   function renderSquare(i) {
     return (
       <button className="square" onClick={() => selectSquare(i)}>
-        {currentGame[currentStep][i]}
+        {squares[i]}
       </button>
     )
   }
@@ -55,9 +31,6 @@ function Board({
           {renderSquare(7)}
           {renderSquare(8)}
         </div>
-        <button className="restart" onClick={restart}>
-          restart
-        </button>
       </div>
     </>
   )
@@ -85,17 +58,30 @@ function Game() {
     )
   })
 
+  function selectSquare(square) {
+    const activeStep = [...currentGame[currentStep]]
+    if (winner || activeStep[square] !== null) {
+      return
+    }
+
+    activeStep[square] = nextValue
+    const squaresCopy = [...currentGame.slice(0, currentStep + 1), activeStep]
+    setCurrentGame(squaresCopy)
+    setCurrentStep(currentStep + 1)
+  }
+
+  function restart() {
+    setCurrentGame([Array(9).fill(null)])
+    setCurrentStep(0)
+  }
+
   return (
     <div className="game">
       <div className="game-board">
-        <Board
-          winner={winner}
-          currentGame={currentGame}
-          currentStep={currentStep}
-          nextValue={nextValue}
-          setCurrentGame={setCurrentGame}
-          setCurrentStep={setCurrentStep}
-        />
+        <Board squares={currentGame[currentStep]} selectSquare={selectSquare} />
+        <button className="restart" onClick={restart}>
+          restart
+        </button>
       </div>
       <div>
         <div className="status">{status}</div>
