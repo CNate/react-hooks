@@ -3,7 +3,6 @@
 // http://localhost:3000/isolated/exercise/04-classes.js
 
 import * as React from 'react'
-import {useCallback} from 'react'
 
 const Board = () => {
   const [squares, setSquares] = React.useState(

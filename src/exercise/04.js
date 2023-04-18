@@ -20,10 +20,6 @@ function Board() {
     setSquares(squaresCopy)
   }
 
-  function restart() {
-    setSquares(Array(9).fill(null))
-  }
-
   function renderSquare(i) {
     return (
       <button className="square" onClick={() => selectSquare(i)}>
@@ -33,7 +29,7 @@ function Board() {
   }
 
   return (
-    <div>
+    <>
       <div className="status">{status}</div>
       <div className="board-row">
         {renderSquare(0)}
