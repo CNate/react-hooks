@@ -25,18 +25,18 @@ const Board = () => {
     </button>
   )
 
+  const updateLocalStorage = React.useCallback(() => {
+    window.localStorage.setItem('squares', JSON.stringify(squares))
+  }, [squares])
+
   const restart = () => {
     setSquares(Array(9).fill(null))
     updateLocalStorage()
   }
 
-  const updateLocalStorage = useCallback(() => {
-    window.localStorage.setItem('squares', JSON.stringify(squares))
-  }, [squares])
-
   React.useEffect(() => {
     updateLocalStorage()
-  }, [updateLocalStorage])
+  }, [squares, updateLocalStorage])
 
   const nextValue = calculateNextValue(squares)
   const winner = calculateWinner(squares)
