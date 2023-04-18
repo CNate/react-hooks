@@ -3,12 +3,7 @@
 // http://localhost:3000/isolated/exercise/04-classes.js
 
 import * as React from 'react'
-
-// If you'd rather practice refactoring a class component to a function
-// component with hooks, then go ahead and do this exercise.
-
-// 🦉 You've learned all the hooks you need to know to refactor this Board
-// component to hooks. So, let's make it happen!
+import {useCallback} from 'react'
 
 const Board = () => {
   const [squares, setSquares] = React.useState(
@@ -83,9 +78,8 @@ function Game() {
 }
 
 function calculateStatus(winner, squares, nextValue) {
-  return winner
-    ? `Winner: ${winner}`
-    : squares.every(Boolean)
+  if (winner) return `Winner: ${winner}`
+  return squares.every(Boolean)
     ? `Scratch: Cat's game`
     : `Next player: ${nextValue}`
 }
@@ -105,8 +99,8 @@ function calculateWinner(squares) {
     [0, 4, 8],
     [2, 4, 6],
   ]
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i]
+  for (const line of lines) {
+    const [a, b, c] = line
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
       return squares[a]
     }

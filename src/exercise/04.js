@@ -2,6 +2,7 @@
 // http://localhost:3000/isolated/exercise/04.js
 
 import * as React from 'react'
+import {useLocalStorageState} from '../utils'
 
 function Board() {
   const [squares, setSquares] = React.useState(Array(9).fill(null))
@@ -39,28 +40,60 @@ function Board() {
         {renderSquare(1)}
         {renderSquare(2)}
       </div>
-      <div className="board-row">
-        {renderSquare(3)}
-        {renderSquare(4)}
-        {renderSquare(5)}
-      </div>
-      <div className="board-row">
-        {renderSquare(6)}
-        {renderSquare(7)}
-        {renderSquare(8)}
-      </div>
-      <button className="restart" onClick={restart}>
-        restart
-      </button>
-    </div>
+    </>
   )
 }
 
 function Game() {
+  const [currentGame, setCurrentGame] = useLocalStorageState('tttGame', [
+    Array(9).fill(null),
+  ])
+  const [currentStep, setCurrentStep] = React.useState(0)
+
+  const nextValue = calculateNextValue(currentGame[currentStep])
+  const winner = calculateWinner(currentGame[currentStep])
+  const status = calculateStatus(winner, currentGame[currentStep], nextValue)
+
+  const steps = currentGame.map((_, index) => {
+    const text = index === 0 ? 'Go to game start' : `Go to step #${index}`
+    const statusText = index === currentStep ? ' (Current)' : ''
+    return (
+      <li key={`move_${index}`}>
+        <button onClick={() => setCurrentStep(index)}>
+          {`${text}${statusText}`}
+        </button>
+      </li>
+    )
+  })
+
+  function selectSquare(square) {
+    const activeStep = [...currentGame[currentStep]]
+    if (winner || activeStep[square] !== null) {
+      return
+    }
+
+    activeStep[square] = nextValue
+    const squaresCopy = [...currentGame.slice(0, currentStep + 1), activeStep]
+    setCurrentGame(squaresCopy)
+    setCurrentStep(currentStep + 1)
+  }
+
+  function restart() {
+    setCurrentGame([Array(9).fill(null)])
+    setCurrentStep(0)
+  }
+
   return (
     <div className="game">
       <div className="game-board">
-        <Board />
+        <Board squares={currentGame[currentStep]} selectSquare={selectSquare} />
+        <button className="restart" onClick={restart}>
+          restart
+        </button>
+      </div>
+      <div>
+        <div className="status">{status}</div>
+        <ol>{steps}</ol>
       </div>
     </div>
   )
