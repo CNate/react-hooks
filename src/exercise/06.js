@@ -41,11 +41,12 @@ function PokemonInfo({pokemonName}) {
   return <div>Submit a Pokemon</div>
 }
 
-const ErrorFallack = ({error}) => {
+const ErrorFallack = ({error, resetErrorBoundary}) => {
   return (
     <>
       There was an error:
       <pre>{error.message}</pre>
+      <button onClick={resetErrorBoundary}>Try Again</button>
     </>
   )
 }
@@ -62,7 +63,10 @@ function App() {
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
       <div className="pokemon-info">
-        <ErrorBoundary FallbackComponent={ErrorFallack} key={pokemonName}>
+        <ErrorBoundary
+          FallbackComponent={ErrorFallack}
+          onReset={() => handleSubmit('')}
+        >
           <PokemonInfo pokemonName={pokemonName} />
         </ErrorBoundary>
       </div>
