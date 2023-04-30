@@ -2,6 +2,7 @@
 // http://localhost:3000/isolated/exercise/06.js
 
 import * as React from 'react'
+import {ErrorBoundary} from './ErrorBoundary'
 import {
   fetchPokemon,
   PokemonInfoFallback,
@@ -11,7 +12,7 @@ import {
 
 function PokemonInfo({pokemonName}) {
   const [state, setState] = React.useState({status: 'idle', pokemon: null})
-  const {status, pokemon} = state
+  const {status, pokemon, error} = state
 
   React.useEffect(() => {
     if (!pokemonName) {
@@ -20,8 +21,8 @@ function PokemonInfo({pokemonName}) {
 
     setState({status: 'pending'})
     fetchPokemon(pokemonName).then(
-      data => setState({status: 'resolved', pokemon: data}),
-      error => setState({status: 'rejected'}),
+      pokemon => setState({status: 'resolved', pokemon}),
+      error => setState({status: 'rejected', error}),
     )
   }, [pokemonName, setState])
 
@@ -34,17 +35,19 @@ function PokemonInfo({pokemonName}) {
   }
 
   if (status === 'rejected') {
-    return (
-      <>
-        <h2>Error:</h2>
-        <label>
-          No pokemon with the name {pokemonName} was found, please submit again.
-        </label>
-      </>
-    )
+    throw error
   }
 
   return <div>Submit a Pokemon</div>
+}
+
+const ErrorFallack = ({error}) => {
+  return (
+    <>
+      There was an error:
+      <pre>{error.message}</pre>
+    </>
+  )
 }
 
 function App() {
@@ -59,7 +62,9 @@ function App() {
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
       <div className="pokemon-info">
-        <PokemonInfo pokemonName={pokemonName} />
+        <ErrorBoundary fallback={ErrorFallack} key={pokemonName}>
+          <PokemonInfo pokemonName={pokemonName} />
+        </ErrorBoundary>
       </div>
     </div>
   )
